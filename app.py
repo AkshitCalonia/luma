@@ -7,7 +7,7 @@ import os
 app = FastAPI()
 
 # Dynamically get the Railway-assigned PORT
-PORT = int(os.getenv("PORT", 8000))
+PORT = int(os.getenv("PORT", 8080))
 
 # Fix CORS issues by explicitly allowing localhost and production frontend
 origins = [
