@@ -1,14 +1,14 @@
-# Luna
+# Echo Tails
 
 ## Inspiration
 
-Bedtime stories are a tradition as old as time, and Luna aims to bring a new level of immersion to these childhood favorite memories by seamlessly integrating visual elements into these spoken narratives. Luna aims to provide a dynamic and engaging platform that transcends traditional storytelling formats, offering users a unique blend of auditory and visual immersion to make storytelling all the more enchanting.
+Bedtime stories are a tradition as old as time, and Echo-Tails aims to bring a new level of immersion to these childhood favorite memories by seamlessly integrating visual elements into these spoken narratives. Echo-Tails aims to provide a dynamic and engaging platform that transcends traditional storytelling formats, offering users a unique blend of auditory and visual immersion to make storytelling all the more enchanting.
 
 ## What it does
 
-Luna displays AI-powered images as users speak. To capture each moment in the spoken story, Luna listens word-for-word for voice input to transcribe audio into text and then subsequently generates vivid images using OpenAI and Dall-E 3. These pictures are exhibited alongside live subtitles and users can additionally title their storybooks.
+Echo-Tails displays AI-powered images as users speak. To capture each moment in the spoken story, Echo-Tails listens word-for-word for voice input to transcribe audio into text and then subsequently generates vivid images using OpenAI and Dall-E 3. These pictures are exhibited alongside live subtitles and users can additionally title their storybooks.
 
-Recognizing the prevalence of visual learning, Luna goes beyond traditional storytelling by promoting an image-driven approach. The vast majority of people are visual learners, which is how Luna induces growth and the holistic development of young children, fostering advancements in crucial areas such as imagination, language proficiency, emotional intelligence, and the foundation for future relationships. We similarly catered towards a simplistic, intuitive user interface to reinforce our generative visual components and ensure ease of use for all individuals.
+Recognizing the prevalence of visual learning, Echo-Tails goes beyond traditional storytelling by promoting an image-driven approach. The vast majority of people are visual learners, which is how Echo-Tails induces growth and the holistic development of young children, fostering advancements in crucial areas such as imagination, language proficiency, emotional intelligence, and the foundation for future relationships. We similarly catered towards a simplistic, intuitive user interface to reinforce our generative visual components and ensure ease of use for all individuals.
 
 ## How we built it
 
@@ -34,7 +34,7 @@ We were also satisfied with our team’s workflow and design process—we meticu
 
 ## What we learned
 
-Through the development of Luna, we gained valuable insights and learned the following:
+Through the development of Echo-Tails, we gained valuable insights and learned the following:
 
 - Took an idea from Concept to Production.
 - How to utilize AI in the field of speech-to-text and image generation.
@@ -43,11 +43,11 @@ Through the development of Luna, we gained valuable insights and learned the fol
 - Proper design and UX.
 - Effective collaboration and version control with Git and GitHub.
 
-## What's next for Luna
+## What's next for Echo-Tails
 
-OpenAI recently released SOMA, a groundbreaking text-to-video tool. Our next biggest step is to prospectively integrate Luna with this technology to advance storytime imagery into playable video formats. We also want to augment additional features including a storybook history that you can access through a sidebar or by flipping back and forth between pictures, the ability to fullscreen and toggle subtitles on/off, and an option to download the story with its linked images and voiceovers. We can enhance the user interface further to provide a more user-friendly experience. We would also look into ways to speed up our calls to generate the image URL.
+OpenAI recently released SOMA, a groundbreaking text-to-video tool. Our next biggest step is to prospectively integrate Echo-Tails with this technology to advance storytime imagery into playable video formats. We also want to augment additional features including a storybook history that you can access through a sidebar or by flipping back and forth between pictures, the ability to fullscreen and toggle subtitles on/off, and an option to download the story with its linked images and voiceovers. We can enhance the user interface further to provide a more user-friendly experience. We would also look into ways to speed up our calls to generate the image URL.
 
-In the realm of voice-to-image generation, there are a lot of use cases outside of the storytelling situation we have focused on. Luna can be used as a visualization tool for on-the-fly business pitches or presentations. Its exceptional visual aid enables to students to more competently memorize speeches or facts for an exam or any upcoming event. For individuals who occupy themselves with podcasts, Luna can be used alongside podcasts to curate a more immersive experience.
+In the realm of voice-to-image generation, there are a lot of use cases outside of the storytelling situation we have focused on. Echo-Tails can be used as a visualization tool for on-the-fly business pitches or presentations. Its exceptional visual aid enables to students to more competently memorize speeches or facts for an exam or any upcoming event. For individuals who occupy themselves with podcasts, Echo-Tails can be used alongside podcasts to curate a more immersive experience.
 
 ## Techstack
 
@@ -59,11 +59,11 @@ Backend: python, fastapi, openai
 
 ## Inspiration
 
-Luna draws inspiration from the timeless tradition of bedtime stories, aiming to elevate this experience by seamlessly incorporating captivating visual elements into spoken narratives. The goal is to create a dynamic and engaging platform that goes beyond traditional storytelling, offering users a unique blend of auditory and visual immersion to enhance the enchantment of storytelling.
+Echo-Tails draws inspiration from the timeless tradition of bedtime stories, aiming to elevate this experience by seamlessly incorporating captivating visual elements into spoken narratives. The goal is to create a dynamic and engaging platform that goes beyond traditional storytelling, offering users a unique blend of auditory and visual immersion to enhance the enchantment of storytelling.
 
 ## What it does
 
-Luna utilizes AI-powered images that dynamically accompany spoken narratives. The process involves transcribing audio to text and generating images using OpenAI and DALL-E 3, capturing each moment in the story. Users can also title their storybooks and enjoy subtitles, enhancing the experience for visual learners, especially benefiting younger children by fostering imagination, language development, emotional understanding, and future relationship-building.
+Echo-Tails utilizes AI-powered images that dynamically accompany spoken narratives. The process involves transcribing audio to text and generating images using OpenAI and DALL-E 3, capturing each moment in the story. Users can also title their storybooks and enjoy subtitles, enhancing the experience for visual learners, especially benefiting younger children by fostering imagination, language development, emotional understanding, and future relationship-building.
 
 ## How we built it
 
@@ -75,15 +75,15 @@ Overcoming challenges in manipulating voice input was a significant hurdle. Form
 
 ## Accomplishments that we're proud of
 
-Key accomplishments include designing a clean, whimsical UI/UX experience, achieving fully functional speech-to-text to image transcription, and successfully integrating the frontend and backend components. These achievements contribute to Luna's overall appeal and usability.
+Key accomplishments include designing a clean, whimsical UI/UX experience, achieving fully functional speech-to-text to image transcription, and successfully integrating the frontend and backend components. These achievements contribute to Echo-Tails's overall appeal and usability.
 
 ## What we learned
 
-The development of Luna provided valuable insights into utilizing AI for speech-to-text and image generation. The team gained proficiency in efficient text processing and honed collaborative skills using Git and GitHub for effective version control. These learning experiences have equipped the team with a robust skill set for future endeavors.
+The development of Echo-Tails provided valuable insights into utilizing AI for speech-to-text and image generation. The team gained proficiency in efficient text processing and honed collaborative skills using Git and GitHub for effective version control. These learning experiences have equipped the team with a robust skill set for future endeavors.
 
-## What's next for Luna
+## What's next for Echo-Tails
 
-The next phase involves integrating Luna with OpenAI's SOMA, a groundbreaking text-to-video tool, to advance storytime imagery into playable video formats. Future enhancements include a storybook history accessible through a sidebar, fullscreen capabilities with customizable subtitles, and the option to download the story with linked images and voiceovers. These additions aim to further enrich the Luna experience and broaden its capabilities.
+The next phase involves integrating Echo-Tails with OpenAI's SOMA, a groundbreaking text-to-video tool, to advance storytime imagery into playable video formats. Future enhancements include a storybook history accessible through a sidebar, fullscreen capabilities with customizable subtitles, and the option to download the story with linked images and voiceovers. These additions aim to further enrich the Echo-Tails experience and broaden its capabilities.
 
 ## Techstack
 
