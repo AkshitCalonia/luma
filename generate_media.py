@@ -15,32 +15,35 @@ if not openai_key:
 client = OpenAI(api_key=openai_key)
 
 def generate_desc(chunk):
-    response = client.chat.completions.create(  # <-- FIXED: Using chat.completions.create instead of completions.create
-        model="gpt-4",  # Or use "gpt-3.5-turbo" for cheaper costs
+    response = client.chat.completions.create(
+        model="gpt-4",
         messages=[
-            {"role": "system", "content": "don't change any text, keep it the same"},
-            {"role": "user", "content": f"Please condense this text into a 5-7 words image generation prompt: {chunk}"}
+            {"role": "system", "content": "You generate short, vivid image prompts for children's storybook illustrations. Make them visually detailed but short."},
+            {"role": "user", "content": f"Convert this into a concise visual description (5-7 words): {chunk}"}
         ],
-        # You are an assistant that generates concise image prompts.
-        # Please condense this text into a 5 to 10 words image generation prompt (be descriptive enough to cover the whole scene of the story)
         max_tokens=50,
         temperature=0.7
     )
     
     image_desc = response.choices[0].message.content.strip()
+    
+    # ✅ Fix: Ensure the output is valid before proceeding
+    if "cannot proceed" in image_desc.lower():
+        raise ValueError("Invalid response received from GPT-4. Adjusting prompt.")
+    
     print("✅ Debug: Image Description:", image_desc)
     return image_desc
 
 
 
 def generate_image_url(image_desc):
-  response = client.images.generate(
-    model="dall-e-3",
-    prompt="The scene setup is in a city and mood is happy : " + image_desc,
-    size="512x512",
-    quality="standard",
-    n=1,
-  )
+    response = client.images.generate(
+        model="dall-e-3",
+        prompt="Children's storybook illustration: " + image_desc,
+        size="1024x1024",  # ✅ Fixed: Uses valid size
+        quality="standard",
+        n=1,
+    )
 
-  image_url = response.data[0].url
-  return image_url
+    image_url = response.data[0].url
+    return image_url
