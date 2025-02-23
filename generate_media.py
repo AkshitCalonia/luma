@@ -14,17 +14,21 @@ if not openai_key:
 # Initialize OpenAI client
 client = OpenAI(api_key=openai_key)
 
-
 def generate_desc(chunk):
-  response = client.completions.create(
-          model="gpt-4",
-          prompt="please condense this text into a 5-word image generation prompt: " + chunk,
-          max_tokens=500,
-          temperature=0
-      )
-  image_desc = response.choices[0].text.strip()
-  print("image desc:", image_desc)
-  return image_desc
+    response = client.chat.completions.create(  # <-- FIXED: Using chat.completions.create instead of completions.create
+        model="gpt-4",  # Or use "gpt-3.5-turbo" for cheaper costs
+        messages=[
+            {"role": "system", "content": "You are an assistant that generates concise image prompts."},
+            {"role": "user", "content": f"Please condense this text into a 5-word image generation prompt: {chunk}"}
+        ],
+        max_tokens=50,
+        temperature=0.7
+    )
+    
+    image_desc = response.choices[0].message.content.strip()
+    print("✅ Debug: Image Description:", image_desc)
+    return image_desc
+
 
 
 def generate_image_url(image_desc):
