@@ -37,7 +37,7 @@ def generate_image_url(image_desc):
   response = client.images.generate(
     model="dall-e-3",
     prompt="The scene setup is in a city and mood is happy : " + image_desc,
-    size="1024x1024",
+    size="512x512",
     quality="standard",
     n=1,
   )
