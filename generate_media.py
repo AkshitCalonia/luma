@@ -2,10 +2,18 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 
-openai_key = os.environ.get('OPENAI_API_KEY')
+# Get API key from environment
+openai_key = os.getenv('OPENAI_API_KEY')
+
+if not openai_key:
+    raise ValueError("Missing OpenAI API Key. Make sure OPENAI_API_KEY is set.")
+
+# Initialize OpenAI client
 client = OpenAI(api_key=openai_key)
+
 
 def generate_desc(chunk):
   response = client.completions.create(
