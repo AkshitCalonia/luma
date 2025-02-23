@@ -1,4 +1,4 @@
-# Echo Tails
+# Echo Tale
 
 ## Inspiration
 
