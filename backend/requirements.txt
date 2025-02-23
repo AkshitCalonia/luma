@@ -1,0 +1,9 @@
+pyaudio
+ibm_watson
+ibm_cloud_sdk_core
+openai
+watchdog
+fastapi
+uvicorn
+pydantic
+python-dotenv
