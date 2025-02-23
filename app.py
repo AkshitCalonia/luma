@@ -50,10 +50,11 @@ async def receive_transcript(transcript: TranscriptModel):
         image_url = generate_image_url(image_desc)
         print("Generated Image URL:", image_url)
 
-        return {"message": image_url}
+        return {"image_url": image_url}  # ✅ Fix: Use "image_url" instead of "message"
     except Exception as e:
         print("Error generating image:", str(e))
         raise HTTPException(status_code=500, detail="Error processing transcript.")
+
 
 @app.post("/titleScreen")
 async def create_title_screen(transcript: TranscriptModel):

@@ -24,16 +24,15 @@ function Home() {
             setIsLoading(true);
             console.log('Sending transcript:', transcript);
             
-            fetch('fastapi-production-9e34.up.railway.app/transcript', {
+            fetch('https://luma-production-15cb.up.railway.app/transcript', {
                 mode: 'cors',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ transcript: transcript }), // 'transcript' instead of 'prompt'
+                body: JSON.stringify({ transcript: transcript }),
             })
-            
             .then(async response => {
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -43,18 +42,21 @@ function Home() {
             })
             .then(data => {
                 console.log('Received data:', data);
-                if (data.imageUrl) {
-                    setGeneratedImage(data.imageUrl);
+                
+                // ✅ Fix: Use the correct key ("image_url" instead of "message")
+                if (data.image_url && data.image_url.startsWith("http")) {
+                    setGeneratedImage(data.image_url);
                 } else {
-                    console.error('No image URL in response:', data);
+                    console.error('No valid image URL in response:', data);
                 }
             })
+            
             .catch(error => {
                 console.error('Error generating image:', error);
             })
             .finally(() => {
                 setIsLoading(false);
-            });
+            });            
         }
     }, [transcript]);
 
