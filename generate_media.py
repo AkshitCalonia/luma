@@ -18,9 +18,11 @@ def generate_desc(chunk):
     response = client.chat.completions.create(  # <-- FIXED: Using chat.completions.create instead of completions.create
         model="gpt-4",  # Or use "gpt-3.5-turbo" for cheaper costs
         messages=[
-            {"role": "system", "content": "You are an assistant that generates concise image prompts."},
-            {"role": "user", "content": f"Please condense this text into a 5-word image generation prompt: {chunk}"}
+            {"role": "system", "content": "don't change any text, keep it the same"},
+            {"role": "user", "content": f"Please condense this text into a 5-7 words image generation prompt: {chunk}"}
         ],
+        # You are an assistant that generates concise image prompts.
+        # Please condense this text into a 5 to 10 words image generation prompt (be descriptive enough to cover the whole scene of the story)
         max_tokens=50,
         temperature=0.7
     )
@@ -34,7 +36,7 @@ def generate_desc(chunk):
 def generate_image_url(image_desc):
   response = client.images.generate(
     model="dall-e-3",
-    prompt="children's storybook illustration of a: " + image_desc,
+    prompt="The scene setup is in a city and mood is happy : " + image_desc,
     size="1024x1024",
     quality="standard",
     n=1,

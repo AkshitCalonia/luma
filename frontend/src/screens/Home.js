@@ -2,63 +2,15 @@ import './Home.css';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMicrophone, faCirclePlay, faCircleStop } from '@fortawesome/free-solid-svg-icons';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 function Home() {
     const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
     const [listening, setListening] = useState(false);
-    const [imageUrl, setImageUrl] = useState(null);
-    const [showTitle, setShowTitle] = useState(false);
-    const [storyTitle, setStoryTitle] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [isFadingOut, setIsFadingOut] = useState(false);
+    const [generatedImages, setGeneratedImages] = useState([]); // Stores multiple images
     const [isLoading, setIsLoading] = useState(false);
-    const [generatedImage, setGeneratedImage] = useState(null);
-
-    useEffect(() => {
-        const words = transcript.split(' ');
-        if (words.length >= 20 && transcript.length > 0) {
-            setListening(false);
-            SpeechRecognition.stopListening();
-            
-            setIsLoading(true);
-            console.log('Sending transcript:', transcript);
-            
-            fetch('https://luma-production-15cb.up.railway.app/transcript', {
-                mode: 'cors',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ transcript: transcript }),
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Received data:', data);
-                
-                // ✅ Fix: Use the correct key ("image_url" instead of "message")
-                if (data.image_url && data.image_url.startsWith("http")) {
-                    setGeneratedImage(data.image_url);
-                } else {
-                    console.error('No valid image URL in response:', data);
-                }
-            })
-            
-            .catch(error => {
-                console.error('Error generating image:', error);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });            
-        }
-    }, [transcript]);
+    const [lastProcessedText, setLastProcessedText] = useState(""); // Stores last generated text
+    const [pauseTimer, setPauseTimer] = useState(null); // Timer to detect pauses
 
     useEffect(() => {
         if (listening) {
@@ -68,211 +20,91 @@ function Home() {
         }
     }, [listening]);
 
+    useEffect(() => {
+        if (listening && transcript.length > lastProcessedText.length) {
+            // Reset timer on new speech
+            if (pauseTimer) clearTimeout(pauseTimer);
+
+            // Start new timer to detect pause
+            setPauseTimer(setTimeout(() => {
+                processTranscript(transcript);
+            }, 1500)); // ✅ Wait 1.5 seconds after last speech before generating an image
+        }
+    }, [transcript]);
+
+    const processTranscript = async (text) => {
+        if (text.trim() === lastProcessedText.trim()) return; // Avoid duplicate processing
+        setLastProcessedText(text.trim()); // ✅ Store last processed sentence
+        fetchImageFromTranscript(text.trim());
+    };
+
+    const fetchImageFromTranscript = async (text) => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('https://luma-production-15cb.up.railway.app/transcript', {
+                mode: 'cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ transcript: text }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Received data:', data);
+
+            if (data.image_url && data.image_url.startsWith("http")) {
+                setGeneratedImages(prevImages => [...prevImages, data.image_url]); // ✅ Append new image
+            }
+        } catch (error) {
+            console.error('Error generating image:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleMic = () => {
+        if (!listening) {
+            resetTranscript();
+            setLastProcessedText(""); // Reset last processed sentence
+            setListening(true);
+        } else {
+            setListening(false);
+        }
+    };
+
     if (!browserSupportsSpeechRecognition) {
         return <span>Browser doesn't support speech recognition.</span>;
     }
 
-    const handleMic = () => {
-        if (!listening) {
-            setIsFadingOut(true);
-            setTimeout(() => {
-                setShowTitle(true);
-                resetTranscript();
-                setIsFadingOut(false);
-            }, 500);
-        } else {
-            setIsFadingOut(true);
-            setTimeout(() => {
-                setListening(false);
-                setShowTitle(false);
-                setStoryTitle('');
-                setIsFadingOut(false);
-            }, 500);
-        }
-    };
-
-    const handleTitleChange = (event) => {
-        setStoryTitle(event.target.value);
-    };
-
-    const handleStart = async () => {
-        if (!listening) {
-            resetTranscript();
-        }
-        if (storyTitle && storyTitle.length > 0) {
-            setIsFadingOut(true);
-            setTimeout(() => {
-                setLoading(true);
-                setIsFadingOut(false);
-            }, 500);
-            try {
-                const response = await fetch('https://fastapi-production-cd88.up.railway.app/titleScreen', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ transcript: storyTitle }),
-                    mode: 'cors',
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log(data.message);
-                setImageUrl(data.message);
-            } catch (error) {
-                console.error('Network error:', error);
-            } finally {
-                setLoading(false);
-                setListening(!listening);
-                console.log('listening', listening);
-            }
-        }
-    };
-
-
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#003B53' }}>
-            <div style={{
-                padding: '16px', boxShadow: '0   1px   2px rgba(0,   0,   0,   0.05)', borderRadius: '4px', textAlign: 'center',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}>
-                {!listening && (
-                    <div style={{ marginTop: '100px', height: '400px' }}>
-                        <p style={{ textAlign: 'center', fontSize: '30px', margin: 0, color: 'white' }}>Welcome to</p>
-                        <p style={{ textAlign: 'center', fontWeight: 'lighter', fontSize: '120px', margin: 0, color: 'white', textShadow: '0  0  20px rgba(255,  255,  255,  1.0)' }}>luna</p>
-                        <div style={{ height: '15vh' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: '#003B53', padding: '20px' }}>
+            {/* 🎤 Microphone Button */}
+            <button onClick={handleMic} style={{ backgroundColor: '#005B81', border: 'none', padding: 10, borderRadius: '50%' }}>
+                <FontAwesomeIcon icon={listening ? faCircleStop : faCirclePlay} color={'#FFFFFF'} size="4x" />
+            </button>
 
-                        {(showTitle && !loading) && (
-                            <div style={{ height: '100px' }}>
-                                <div>
-                                    <input
-                                        name="storyTitle"
-                                        placeholder="Title your story"
-                                        value={storyTitle}
-                                        onChange={handleTitleChange}
-                                        onKeyPress={(event) => {
-                                            if (event.key === 'Enter') {
-                                                handleStart();
-                                            }
-                                        }}
-                                        className={`fade-in-input ${isFadingOut ? 'fade-out-button' : ''}`}
-                                        style={{
-                                            width: '250px',
-                                            height: '50px',
-                                            paddingBottom: '10px',
-                                            paddingLeft: '15px',
-                                            paddingTop: '10px',
-                                            borderRadius: '15px',
-                                            border: '1px solid white',
-                                            backgroundColor: 'rgba(0,   91,   129,   0.25)',
-                                            color: 'white',
-                                            fontSize: '19px',
-                                            marginBottom: '80px',
-                                            boxShadow: '0  0  10px rgba(255,  255,  255,  0.5)',
-                                            '::placeholder': {
-                                                color: 'white',
-                                                opacity: 1,
-                                            },
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    {storyTitle.length > 0 && (
-                                        <button
-                                            onClick={handleStart}
-                                            className={`fade-in-input ${isFadingOut ? 'fade-out-button' : ''}`}
-                                            style={{ padding: 2, borderRadius: '100%', border: 'none', backgroundColor: '#005B81' }}
-                                        >
-                                            <FontAwesomeIcon icon={faCirclePlay} color={'#FFFFFF'} size="4x" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {(showTitle && loading) && (
-                            <div className='fade-in-input'>
-                                <p style={{ textAlign: 'center', fontSize: '20px', margin: 0, color: 'white', marginBottom: 20 }}> Once upon a time...</p>
-                                <div className="spinner">
-                                    <div className="rect1"></div>
-                                    <div className="rect2"></div>
-                                    <div className="rect3"></div>
-                                    <div className="rect4"></div>
-                                    <div className="rect5"></div>
-                                </div>
-                            </div>
-                        )}
-
-                        {!showTitle && (
-                            <div className={isFadingOut ? 'fade-out' : ''}>
-                                <p style={{ textAlign: 'center', fontSize: '20px', margin: 0, color: 'white', marginBottom: 40 }}>Click to start</p>
-
-                                <button id="mic-button" onClick={handleMic} style={{ padding: 0, borderRadius: '50%', border: 'none', backgroundColor: '#005B81' }}>
-                                    <FontAwesomeIcon icon={faCirclePlay} color={'#FFFFFF'} size="5x" />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                )}
-                {listening && (
-                    <div className='fade-in-input' style={{}}>
-                        <div style={{
-                            position: 'absolute',
-                            top: '0',
-                            left: '0',
-                            width: '1024px',
-                            height: '100%',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            {imageUrl && <img src={imageUrl} alt="AI Generated" loading={"lazy"} style={{ width: '90%', height: '90%', borderRadius: '25px', boxShadow: '0  0  8px  3px rgba(255,  255,  255,  0.5)' }} />}
-                        </div>
-
-                        <div style={{
-                            position: 'absolute',
-                            top: '0',
-                            left: '1010px',
-                            right: '30px',
-                            height: '100%',
-                            padding: '16px',
-                        }}>
-                            <div style={{
-                                marginTop: '30px',
-                                border: '0.5px solid black',
-                                height: '70%',
-                                backgroundColor: '#003145',
-                                borderRadius: '15px',
-                                boxShadow: '0  0  8px  3px rgba(255,  255,  255,  0.5)',
-                                padding: '20px',
-                            }}>
-                                <p style={{ color: 'white', fontSize: '25px' }}>
-                                    {transcript}
-                                </p>
-                            </div>
-
-                            <button className={`pulse-button ${isFadingOut ? 'fade-out' : ''}`} onClick={handleMic} style={{ animation: 'pulse   2s infinite', marginTop: 30, height : "80px", padding:0, width : "80px",  borderRadius: '100%', border: 0 , backgroundColor: '#003B53' }}>
-                                <FontAwesomeIcon icon={faCircleStop} color={'white'} size="4x" />
-                            </button>
-
-                        </div>
-                    </div>
-                )}
-                {isLoading && <div>Generating image...</div>}
-                {generatedImage && (
-                    <div className="generated-image-container">
-                        <img 
-                            src={generatedImage} 
-                            alt="Generated from speech"
-                            className="generated-image"
-                        />
-                    </div>
-                )}
+            {/* 📜 Display Transcript */}
+            <div style={{ marginTop: 20, backgroundColor: 'white', padding: '10px', borderRadius: '10px', minWidth: '50%', textAlign: 'center', fontSize: '18px' }}>
+                <p style={{ color: 'black', fontWeight: 'bold' }}>Live Transcript:</p>
+                <p style={{ color: '#333' }}>{transcript || "Start speaking..."}</p>
             </div>
+
+            {/* ⏳ Loading Indicator */}
+            {isLoading && <p style={{ color: 'white', marginTop: 10 }}>Generating image...</p>}
+
+            {/* 🖼️ Display Latest Image */}
+            {generatedImages.length > 0 && (
+                <img 
+                    src={generatedImages[generatedImages.length - 1]} 
+                    alt="Generated from speech"
+                    style={{ width: '100%', maxWidth: '500px', height: 'auto', marginTop: 20, borderRadius: '15px' }}
+                />
+            )}
         </div>
     );
 }
