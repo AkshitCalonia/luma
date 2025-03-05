@@ -2,16 +2,13 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Get API key from environment
 openai_key = os.getenv('OPENAI_API_KEY')
 
 if not openai_key:
     raise ValueError("Missing OpenAI API Key. Make sure OPENAI_API_KEY is set.")
 
-# Initialize OpenAI client
 client = OpenAI(api_key=openai_key)
 
 def generate_desc(chunk):
@@ -27,11 +24,10 @@ def generate_desc(chunk):
     
     image_desc = response.choices[0].message.content.strip()
     
-    # ✅ Fix: Ensure the output is valid before proceeding
     if "cannot proceed" in image_desc.lower():
         raise ValueError("Invalid response received from GPT-4. Adjusting prompt.")
     
-    print("✅ Debug: Image Description:", image_desc)
+    print(" Debug: Image Description:", image_desc)
     return image_desc
 
 
@@ -40,7 +36,7 @@ def generate_image_url(image_desc):
     response = client.images.generate(
         model="dall-e-3",
         prompt="Children's storybook illustration: " + image_desc,
-        size="1024x1024",  # ✅ Fixed: Uses valid size
+        size="1024x1024",  
         quality="standard",
         n=1,
     )
