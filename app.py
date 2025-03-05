@@ -6,21 +6,20 @@ import os
 
 app = FastAPI()
 
-# Dynamically get the Railway-assigned PORT
+# connct this thing to railway , 
 PORT = int(os.getenv("PORT", 8080))
 
-# Fix CORS issues by explicitly allowing localhost and production frontend
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
-    "https://fastapi-production-cd88.up.railway.app",  # Replace with your new Railway URL
-    "https://your-frontend-url.com",  # Replace with your actual frontend URL
+    "https://fastapi-production-cd88.up.railway.app", 
+    "https://your-frontend-url.com",  
     "http://localhost"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Restrict to known frontend origins for security
+    allow_origins=origins, 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,16 +27,13 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    """Health check route to confirm FastAPI is running."""
     return {"message": "Hello from FastAPI!"}
 
-# Define the model for receiving transcript data
 class TranscriptModel(BaseModel):
     transcript: str
 
 @app.post("/transcript")
 async def receive_transcript(transcript: TranscriptModel):
-    """Handles transcript processing and image generation."""
     if not transcript.transcript.strip():
         raise HTTPException(status_code=400, detail="Transcript cannot be empty.")
 
@@ -50,7 +46,7 @@ async def receive_transcript(transcript: TranscriptModel):
         image_url = generate_image_url(image_desc)
         print("Generated Image URL:", image_url)
 
-        return {"image_url": image_url}  # ✅ Fix: Use "image_url" instead of "message"
+        return {"image_url": image_url}  
     except Exception as e:
         print("Error generating image:", str(e))
         raise HTTPException(status_code=500, detail="Error processing transcript.")
@@ -58,7 +54,6 @@ async def receive_transcript(transcript: TranscriptModel):
 
 @app.post("/titleScreen")
 async def create_title_screen(transcript: TranscriptModel):
-    """Generates an image based on the provided title screen text."""
     if not transcript.transcript.strip():
         raise HTTPException(status_code=400, detail="Title cannot be empty.")
 
@@ -73,7 +68,6 @@ async def create_title_screen(transcript: TranscriptModel):
         print("Error generating title screen:", str(e))
         raise HTTPException(status_code=500, detail="Error generating title screen.")
 
-# Start the FastAPI server with Railway-compatible dynamic port
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=PORT)
